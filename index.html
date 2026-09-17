@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CartShare is a collaborative shopping room for shared orders.">
+  <title>CartShare | Shared shopping, sorted</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="auth-view" class="auth-layout">
+    <section class="auth-story" aria-label="CartShare introduction">
+      <div class="brand-lockup"><span class="brand-mark">↗</span> CartShare</div>
+      <div class="story-copy">
+        <p class="eyebrow">Shared shopping, sorted.</p>
+        <h1>One cart.<br><em>Everyone</em> on board.</h1>
+        <p class="story-text">Coordinate a group order without the group chat chaos. Add what you need, see who is bringing what, and hit free delivery together.</p>
+      </div>
+      <div class="story-footer"><span class="signal-dot"></span> Built for roommates, teams &amp; trips</div>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-card">
+        <div class="mobile-brand brand-lockup"><span class="brand-mark">↗</span> CartShare</div>
+        <p class="eyebrow">Get started</p>
+        <h2>Join the shopping room.</h2>
+        <p class="muted">Enter your name and a room code to start sharing.</p>
+        <form id="room-form" novalidate>
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" placeholder="e.g. Maya" autocomplete="name" required maxlength="24">
+          <label for="room-code">Room code</label>
+          <div class="code-input-wrap"><input id="room-code" name="room" type="text" placeholder="e.g. KITCHEN-42" maxlength="12" autocomplete="off"><button class="generate-btn" id="generate-code" type="button" title="Generate a room code" aria-label="Generate a room code">↗</button></div>
+          <p class="field-hint">Have a code from your group? Enter it above. Otherwise generate a new one.</p>
+          <button class="primary-btn w-100" type="submit">Enter room <span>→</span></button>
+          <p id="form-error" class="form-error" role="alert"></p>
+        </form>
+        <div class="demo-note"><span>⌁</span><span>Open this app in two browser tabs with the same code to test live collaboration.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <main id="app-view" class="app-shell d-none">
+    <nav class="topbar">
+      <a class="brand-lockup" href="#"><span class="brand-mark">↗</span> CartShare</a>
+      <div class="room-pill"><span class="live-dot"></span><span>Room</span><strong id="room-label">KITCHEN-42</strong><button id="copy-room" type="button" title="Copy room code" aria-label="Copy room code">⧉</button></div>
+      <div class="user-menu"><span class="avatar" id="user-avatar">M</span><span id="user-label">Maya</span><button id="leave-room" class="leave-button" type="button" title="Leave room">↪ <span>Leave room</span></button></div>
+    </nav>
+
+    <div class="app-content">
+      <header class="page-heading">
+        <div><p class="eyebrow">Good to see you, <span id="greeting-name">Maya</span></p><h1>Let’s get this order <em>sorted.</em></h1></div>
+        <button id="print-receipt" class="secondary-btn" type="button"><span>▣</span> Print receipt</button>
+      </header>
+      <section class="stats-row" aria-label="Order status">
+        <article class="stat-card stat-total"><span class="stat-label">Cart total</span><strong id="cart-total">$0.00</strong><span id="shipping-status" class="stat-note">Add items to get started</span></article>
+        <article class="stat-card"><span class="stat-label">Free delivery</span><strong id="progress-amount">$75.00 to go</strong><div class="progress-track"><span id="progress-bar"></span></div><span class="stat-note">Minimum order $75.00</span></article>
+        <article class="stat-card"><span class="stat-label">People in room</span><strong id="people-count">1 person</strong><span class="stat-note"><span class="online-dot"></span> Active now</span></article>
+      </section>
+
+      <div class="workspace-grid">
+        <section class="cart-panel panel-card">
+          <div class="panel-heading"><div><p class="eyebrow">The shared list</p><h2>What we’re getting <span id="item-count">0 items</span></h2></div><button id="add-item-focus" class="add-btn" type="button">+ Add item</button></div>
+          <form id="item-form" class="add-item-form">
+            <input id="item-name" type="text" placeholder="Add an item, e.g. oat milk" maxlength="48" aria-label="Item name" required>
+            <input id="item-price" type="number" min="0.01" step="0.01" placeholder="$ price" aria-label="Item price" required>
+            <button class="primary-btn" type="submit">Add</button>
+          </form>
+          <div id="empty-cart" class="empty-state"><div class="empty-icon">＋</div><h3>Your shared cart is waiting.</h3><p>Be the first to add something your group needs.</p></div>
+          <div id="cart-list" class="cart-list" aria-live="polite"></div>
+          <div class="cart-foot"><span id="cart-foot-label">0 items</span><strong id="cart-foot-total">$0.00</strong></div>
+        </section>
+        <aside class="activity-panel panel-card">
+          <div class="panel-heading"><div><p class="eyebrow">Live feed</p><h2>Activity</h2></div><span class="live-label"><span class="live-dot"></span> Live</span></div>
+          <div id="activity-list" class="activity-list" aria-live="polite"></div>
+        </aside>
+      </div>
+      <footer class="app-footer"><span>CartShare</span><span>Room <strong id="footer-room">KITCHEN-42</strong> · Changes sync automatically across tabs</span></footer>
+    </div>
+  </main>
+
+  <div id="toast" class="toast-message" role="status"></div>
+  <div id="receipt-modal" class="modal-backdrop d-none" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><div class="receipt-sheet"><button id="close-receipt" class="close-btn" type="button" aria-label="Close receipt">×</button><div class="receipt-brand">↗ CartShare</div><p class="eyebrow">Group order receipt</p><h2 id="receipt-title">Room <span id="receipt-room"></span></h2><p id="receipt-date" class="muted"></p><div id="receipt-items"></div><div class="receipt-total"><span>Total</span><strong id="receipt-total"></strong></div><p class="receipt-footnote">Generated by CartShare · Shared fairly, shopped together.</p><button id="receipt-print-action" class="primary-btn w-100" type="button">Print receipt</button></div></div>
+  <script src="js/app.js"></script>
+</body>
+</html>
